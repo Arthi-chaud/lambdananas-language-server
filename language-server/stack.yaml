@@ -1,0 +1,5 @@
+snapshot: lts-22.27
+system-ghc: true
+
+packages:
+- .
