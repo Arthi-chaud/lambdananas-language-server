@@ -54,18 +54,23 @@ getCodingStyleWarnings filePath = runExceptT $ do
 --
 -- On success, returns the raw stdout
 runLambdananas :: FilePath -> IO (Either LambdananasError String)
-runLambdananas fileToInspect = runExceptT $ do
-    let process = proc "lambdananas-exe" [fileToInspect]
-    (exitCode, stdout, stderr) <-
-        ExceptT $
-            catch
-                (Right <$> readCreateProcessWithExitCode process "")
-                (\(_ :: IOException) -> return $ Left CommandNotFound)
-    liftEither $ case exitCode of
-        ExitSuccess -> Right stdout
-        -- TODO Check if portable
-        ExitFailure 127 -> Left CommandNotFound
-        ExitFailure _
-            | "openFile: does not exist" `isInfixOf` stderr ->
-                Left SourceFileNotFound
-            | otherwise -> Left $ UnknownError stderr
+runLambdananas fileToInspect =
+    catch
+        (go "lambdananas-exe") -- The binary name when installed with stack
+        (\(_ :: IOException) -> go "lambdananas") -- Alternative name
+  where
+    go binName = runExceptT $ do
+        let process = proc binName [fileToInspect]
+        (exitCode, stdout, stderr) <-
+            ExceptT $
+                catch
+                    (Right <$> readCreateProcessWithExitCode process "")
+                    (\(_ :: IOException) -> return $ Left CommandNotFound)
+        liftEither $ case exitCode of
+            ExitSuccess -> Right stdout
+            -- TODO Check if portable
+            ExitFailure 127 -> Left CommandNotFound
+            ExitFailure _
+                | "openFile: does not exist" `isInfixOf` stderr ->
+                    Left SourceFileNotFound
+                | otherwise -> Left $ UnknownError stderr
