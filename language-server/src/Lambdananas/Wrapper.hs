@@ -13,16 +13,6 @@ data LambdananasError
     | -- An unknown error occured. The `String` is a raw error message, for debugging only.
       UnknownError String
 
--- | Describes the severity of a coding style mistake
-data SeverityLevel = Major | Minor | Info
-
-data CodingStyleMistake = CodingStyleMistake
-    { level :: SeverityLevel
-    , code :: String
-    , fileName :: String
-    , description :: String
-    }
-
 -- | Runs Lambdananas, passing it the provided `FilePath`.
 --
 -- On success, returns the raw stdout

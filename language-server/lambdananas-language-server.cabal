@@ -7,11 +7,10 @@ cabal-version: 2.2
 name:           lambdananas-language-server
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/lambdananas-language-server#readme>
-homepage:       https://github.com/githubuser/lambdananas-language-server#readme
-bug-reports:    https://github.com/githubuser/lambdananas-language-server/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2024 Author name here
+homepage:       https://github.com/Arthi-Chaud/lambdananas-language-server#readme
+bug-reports:    https://github.com/Arthi-Chaud/lambdananas-language-server/issues
+author:         Arthi-Chaud
+copyright:      2024 Arthi-Chaud
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -21,12 +20,12 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/lambdananas-language-server
+  location: https://github.com/Arthi-Chaud/lambdananas-language-server
 
 library
   exposed-modules:
       Lambdananas.Wrapper
-      Lib
+      Lambdananas.Wrapper.Warn
   other-modules:
       Paths_lambdananas_language_server
   autogen-modules:
@@ -36,6 +35,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , megaparsec
     , process
   default-language: Haskell2010
 
@@ -52,12 +52,14 @@ executable lambdananas-language-server-exe
       base >=4.7 && <5
     , lambdananas-language-server
     , lsp
+    , megaparsec
   default-language: Haskell2010
 
 test-suite lambdananas-language-server-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      LambdananasTest.Wrapper.Warn
       Paths_lambdananas_language_server
   autogen-modules:
       Paths_lambdananas_language_server
@@ -66,5 +68,7 @@ test-suite lambdananas-language-server-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , hspec
     , lambdananas-language-server
+    , megaparsec
   default-language: Haskell2010

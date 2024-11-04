@@ -1,10 +1,10 @@
 name:                lambdananas-language-server
 version:             0.1.0.0
-github:              "githubuser/lambdananas-language-server"
+github:              "Arthi-Chaud/lambdananas-language-server"
 license:             BSD-3-Clause
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2024 Author name here"
+author:              "Arthi-Chaud"
+maintainer:          ""
+copyright:           "2024 Arthi-Chaud"
 
 extra-source-files:
 - README.md
@@ -37,6 +37,8 @@ library:
   source-dirs: src
   dependencies:
     - process
+    - megaparsec
+
 executables:
   lambdananas-language-server-exe:
     main:                Main.hs
@@ -48,6 +50,7 @@ executables:
     dependencies:
     - lambdananas-language-server
     - lsp
+    - megaparsec
 
 tests:
   lambdananas-language-server-test:
@@ -59,3 +62,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - lambdananas-language-server
+    - hspec
+    - megaparsec
