@@ -38,7 +38,7 @@ library:
   dependencies:
     - process
     - megaparsec
-
+    - mtl
 executables:
   lambdananas-language-server-exe:
     main:                Main.hs
