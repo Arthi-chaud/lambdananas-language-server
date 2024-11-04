@@ -8,7 +8,7 @@ module Lambdananas.Wrapper (
 import Control.Exception
 import Control.Monad.Except
 import Data.Char (isSpace)
-import Data.List (dropWhileEnd, groupBy)
+import Data.List (dropWhileEnd, groupBy, isInfixOf)
 import Lambdananas.Wrapper.Warn (CodingStyleWarning (fileName), parseCodingStyleWarning)
 import System.Exit (ExitCode (..))
 import System.Process
@@ -17,6 +17,7 @@ import Text.Megaparsec as M
 data LambdananasError
     = -- | The lambdananas binary could not be found
       CommandNotFound
+    | SourceFileNotFound
     | -- | An error occured while parsing the output of Lambdananas.
       --
       -- The `String` is a human-readable message explaining the error
@@ -64,4 +65,7 @@ runLambdananas fileToInspect = runExceptT $ do
         ExitSuccess -> Right stdout
         -- TODO Check if portable
         ExitFailure 127 -> Left CommandNotFound
-        ExitFailure _ -> Left $ UnknownError stderr
+        ExitFailure _
+            | "openFile: does not exist" `isInfixOf` stderr ->
+                Left SourceFileNotFound
+            | otherwise -> Left $ UnknownError stderr
