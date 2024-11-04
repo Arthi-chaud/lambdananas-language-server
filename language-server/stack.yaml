@@ -1,4 +1,4 @@
-snapshot: lts-22.27
+snapshot: lts-22.40
 system-ghc: true
 
 packages:

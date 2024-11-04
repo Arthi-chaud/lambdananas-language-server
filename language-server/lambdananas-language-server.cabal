@@ -54,6 +54,8 @@ executable lambdananas-language-server-exe
     , lambdananas-language-server
     , lsp
     , megaparsec
+    , mtl
+    , text
   default-language: Haskell2010
 
 test-suite lambdananas-language-server-test

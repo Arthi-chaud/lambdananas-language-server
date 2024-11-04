@@ -39,6 +39,7 @@ library:
     - process
     - megaparsec
     - mtl
+
 executables:
   lambdananas-language-server-exe:
     main:                Main.hs
@@ -51,6 +52,8 @@ executables:
     - lambdananas-language-server
     - lsp
     - megaparsec
+    - mtl
+    - text
 
 tests:
   lambdananas-language-server-test:
