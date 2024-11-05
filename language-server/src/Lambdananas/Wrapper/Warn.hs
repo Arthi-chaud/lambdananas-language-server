@@ -47,12 +47,29 @@ parseRuleCode = do
 --
 -- @
 -- ./app/Main.hs:73: MINOR:H-F3 # too long line
+--
+-- ./src/Lambdananas/Wrapper.hs contains forbidden extensions
 -- @
 parseCodingStyleWarning :: Parser CodingStyleWarning
-parseCodingStyleWarning = do
-    fileName <- many (satisfy (/= ':'))
-    line <- char ':' *> L.decimal
-    level <- string ": " *> parseSeverityLevel
-    ruleCode <- char ':' *> parseRuleCode
-    description <- string " # " *> many asciiChar
-    return CodingStyleWarning{..}
+parseCodingStyleWarning = try parseForbiddenExtensionWarning <|> parseRegularWarning
+  where
+    parseRegularWarning = do
+        fileName <- manyTill asciiChar (char ':')
+        line <- L.decimal
+        level <- string ": " *> parseSeverityLevel
+        ruleCode <- char ':' *> parseRuleCode
+        description <- string " # " *> many asciiChar
+        return CodingStyleWarning{..}
+
+parseForbiddenExtensionWarning :: Parser CodingStyleWarning
+parseForbiddenExtensionWarning = do
+    let forbiddenExtensionStr = " contains forbidden extensions"
+    fileName <- manyTill asciiChar (string forbiddenExtensionStr)
+    return
+        CodingStyleWarning
+            { fileName = fileName
+            , line = 1
+            , level = Major
+            , description = "language extensions are forbidden"
+            , ruleCode = "H-E1"
+            }

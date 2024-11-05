@@ -24,7 +24,14 @@ data LambdananasError
       OutputParsingError String
     | -- An unknown error occured. The `String` is a raw error message, for debugging only.
       UnknownError String
-    deriving (Show)
+
+-- | Human-readable error messages that can be sent to the client
+instance Show LambdananasError where
+    show CommandNotFound = "The lambdananas executable was not found. Is 'lambdananas-exe' or 'lambdananas' in your PATH ?"
+    show SourceFileNotFound = "The file was not found by lambdananas."
+    show (OutputParsingError str) =
+        "lambdanans gave us an unexpected output:\n" ++ str
+    show (UnknownError str) = "An unknown error occured:\n" ++ str
 
 -- | Invokes lambdananas and returns the reported 'CodingStyleWarning'
 --
