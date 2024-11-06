@@ -23,6 +23,14 @@ source-repository head
 
 library
   exposed-modules:
+      Lambdananas.LanguageServer.Diagnostic
+      Lambdananas.LanguageServer.Events
+      Lambdananas.LanguageServer.Events.Hover
+      Lambdananas.LanguageServer.Events.Init
+      Lambdananas.LanguageServer.Initialization
+      Lambdananas.LanguageServer.Monad
+      Lambdananas.LanguageServer.Server
+      Lambdananas.LanguageServer.State
       Lambdananas.Wrapper
       Lambdananas.Wrapper.Warn
   other-modules:
@@ -34,9 +42,11 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , lsp
     , megaparsec
     , mtl
     , process
+    , text
   default-language: Haskell2010
 
 executable lambdananas-language-server
@@ -51,10 +61,6 @@ executable lambdananas-language-server
   build-depends:
       base >=4.7 && <5
     , lambdananas-language-server
-    , lsp
-    , megaparsec
-    , mtl
-    , text
   default-language: Haskell2010
 
 test-suite lambdananas-language-server-test

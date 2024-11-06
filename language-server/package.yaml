@@ -31,6 +31,8 @@ library:
     - process
     - megaparsec
     - mtl
+    - lsp
+    - text
 
 executables:
   lambdananas-language-server:
@@ -42,10 +44,6 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - lambdananas-language-server
-    - lsp
-    - megaparsec
-    - mtl
-    - text
 
 tests:
   lambdananas-language-server-test:
