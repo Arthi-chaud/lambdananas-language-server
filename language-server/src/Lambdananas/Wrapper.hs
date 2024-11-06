@@ -32,7 +32,7 @@ instance Show LambdananasError where
     show CommandNotFound = "The lambdananas executable was not found. Is 'lambdananas-exe' or 'lambdananas' in your PATH ?"
     show SourceFileNotFound = "The file was not found by lambdananas."
     show (OutputParsingError str) =
-        "lambdanans gave us an unexpected output:\n" ++ str
+        "lambdananas gave us an unexpected output:\n" ++ str
     show (UnknownError str) = "An unknown error occured:\n" ++ str
 
 -- | Invokes lambdananas and returns the reported 'CodingStyleWarning'
@@ -49,18 +49,17 @@ getCodingStyleWarnings filePath = runExceptT $ do
         splitOutput =
             filter
                 -- In some cases, H-E1 does not contains the file name. We skip it
-                (\s -> not $ null s && s /= " contains forbidden extensions")
+                (\s -> not (null s) && s /= "contains forbidden extensions")
                 $ trim <$> lines rawOutput
         parseWarning s = case M.parse parseCodingStyleWarning "" s of
             Left e -> Left $ OutputParsingError $ show e
             Right warn -> Right warn
-        parseRes = parseWarning <$> splitOutput
         groupByFilePath l =
             (\group -> (fileName $ head group, group))
                 <$> groupBy
                     (\w1 w2 -> fileName w1 == fileName w2)
                     l
-    warns <- liftEither $ sequence parseRes
+    warns <- liftEither $ mapM parseWarning splitOutput
     return $ groupByFilePath warns
 
 -- | Checks lambdananas is in PATH
