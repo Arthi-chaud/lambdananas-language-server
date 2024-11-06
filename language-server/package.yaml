@@ -34,6 +34,7 @@ library:
     - lsp
     - text
     - co-log-core
+    - lens
 
 executables:
   lambdananas-language-server:

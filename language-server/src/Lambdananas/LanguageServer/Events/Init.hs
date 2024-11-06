@@ -9,8 +9,3 @@ onInit :: Handlers LSM
 onInit = notificationHandler SMethod_Initialized $ \_ -> do
     debugLog "Init event received"
     return ()
-
--- state <- liftIO . takeMVar =<< lift ask
--- forM_ (fst <$> state) $ \filePath ->
---     let nrmUri = toNormalizedUri $ filePathToUri filePath
---      in emitDiagnostics nrmUri

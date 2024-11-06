@@ -26,22 +26,3 @@ initialize = withIndefiniteProgress
                         MessageType_Error
                         "Lambdananas was not found in PATH. Did you install it?"
                     )
-
--- workspaceFolders <- fromMaybe [] <$> getWorkspaceFolders
--- let folderToPath (WorkspaceFolder uri _) = uriToFilePath uri
---     folders = mapMaybe folderToPath workspaceFolders
--- scanRes <- liftIO $ mapM getCodingStyleWarnings folders
--- case Prelude.concat <$> sequence scanRes of
---     Right state -> do
---         mstate <- lift ask
---         liftIO $ putMVar mstate state
---         forM_ (fst <$> state) $ \filePath ->
---             let normUri = toNormalizedUri $ filePathToUri filePath
---              in emitDiagnostics normUri
---     Left err ->
---         sendNotification
---             SMethod_WindowShowMessage
---             ( ShowMessageParams MessageType_Error $
---                 T.pack $
---                     "Something went wrong!\n" ++ show err
---             )

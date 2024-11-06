@@ -11,5 +11,6 @@ import Language.LSP.Server
 onHover :: Handlers LSM
 onHover = requestHandler SMethod_TextDocumentHover $ \_req responder -> do
     debugLog "Hover event received"
-    let hover = Hover (InL $ mkPlainText "Hello World") Nothing
-    responder (Right (InL hover))
+    -- let hover = Hover (InL $ mkPlainText "Hello World") Nothing
+    -- responder (Right (InL hover))
+    responder (Right (InR Null))
