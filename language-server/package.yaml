@@ -33,6 +33,7 @@ library:
     - mtl
     - lsp
     - text
+    - co-log-core
 
 executables:
   lambdananas-language-server:

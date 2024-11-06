@@ -28,6 +28,7 @@ library
       Lambdananas.LanguageServer.Events.Hover
       Lambdananas.LanguageServer.Events.Init
       Lambdananas.LanguageServer.Initialization
+      Lambdananas.LanguageServer.Logging
       Lambdananas.LanguageServer.Monad
       Lambdananas.LanguageServer.Server
       Lambdananas.LanguageServer.State
@@ -42,6 +43,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , co-log-core
     , lsp
     , megaparsec
     , mtl

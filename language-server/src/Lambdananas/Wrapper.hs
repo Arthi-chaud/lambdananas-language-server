@@ -2,12 +2,14 @@
 
 module Lambdananas.Wrapper (
     getCodingStyleWarnings,
+    lambdananasExists,
     LambdananasError (..),
 ) where
 
 import Control.Exception
 import Control.Monad.Except
 import Data.Char (isSpace)
+import Data.Either (isRight)
 import Data.List (dropWhileEnd, groupBy, isInfixOf)
 import Lambdananas.Wrapper.Warn (CodingStyleWarning (fileName), parseCodingStyleWarning)
 import System.Exit (ExitCode (..))
@@ -42,7 +44,7 @@ getCodingStyleWarnings ::
     FilePath ->
     IO (Either LambdananasError [(FilePath, [CodingStyleWarning])])
 getCodingStyleWarnings filePath = runExceptT $ do
-    rawOutput <- ExceptT $ runLambdananas filePath
+    rawOutput <- ExceptT $ runLambdananas [filePath]
     let trim = dropWhile isSpace . dropWhileEnd isSpace
         splitOutput = filter (not . null) $ trim <$> lines rawOutput
         parseWarning s = case M.parse parseCodingStyleWarning "" s of
@@ -57,17 +59,21 @@ getCodingStyleWarnings filePath = runExceptT $ do
     warns <- liftEither $ sequence parseRes
     return $ groupByFilePath warns
 
--- | Runs Lambdananas, passing it the provided `FilePath`.
+-- | Checks lambdananas is in PATH
+lambdananasExists :: IO Bool
+lambdananasExists = isRight <$> runLambdananas ["-h"]
+
+-- | Runs Lambdananas, passing it the provided arguments
 --
 -- On success, returns the raw stdout
-runLambdananas :: FilePath -> IO (Either LambdananasError String)
-runLambdananas fileToInspect =
+runLambdananas :: [String] -> IO (Either LambdananasError String)
+runLambdananas args =
     catch
         (go "lambdananas-exe") -- The binary name when installed with stack
         (\(_ :: IOException) -> go "lambdananas") -- Alternative name
   where
     go binName = runExceptT $ do
-        let process = proc binName [fileToInspect]
+        let process = proc binName args
         (exitCode, stdout, stderr) <-
             ExceptT $
                 catch
