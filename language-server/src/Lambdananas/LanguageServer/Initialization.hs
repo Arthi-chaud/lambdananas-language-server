@@ -4,10 +4,9 @@ module Lambdananas.LanguageServer.Initialization (initialize) where
 
 import Control.Monad.Reader
 import Lambdananas.LanguageServer.Logging (debugLog, errorLog)
+import Lambdananas.LanguageServer.Messages (sendErrorMessage)
 import Lambdananas.LanguageServer.Monad
 import Lambdananas.Wrapper
-import Language.LSP.Protocol.Message
-import Language.LSP.Protocol.Types
 import Language.LSP.Server
 
 initialize :: LSM ()
@@ -20,9 +19,5 @@ initialize = withIndefiniteProgress
             then debugLog "Lambdanas was found!"
             else do
                 errorLog "Lambdananas was not found"
-                sendNotification
-                    SMethod_WindowShowMessage
-                    ( ShowMessageParams
-                        MessageType_Error
-                        "Lambdananas was not found in PATH. Did you install it?"
-                    )
+                sendErrorMessage
+                    "Lambdananas was not found in PATH. Did you install it?"
