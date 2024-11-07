@@ -6,7 +6,9 @@ module Lambdananas.Wrapper.Warn (
     parseCodingStyleWarning,
 ) where
 
+import Data.List (isPrefixOf)
 import Data.Void
+import System.FilePath
 import Text.Megaparsec
 import Text.Megaparsec.Char (alphaNumChar, asciiChar, char, string, string', upperChar)
 import qualified Text.Megaparsec.Char.Lexer as L
@@ -60,7 +62,8 @@ parseRegularWarning = do
     line <- L.decimal
     level <- string ": " *> parseSeverityLevel
     ruleCode <- char ':' *> parseRuleCode
-    description <- string " # " *> many asciiChar
+    rawDescription <- string " # " *> many asciiChar
+    let description = replace rawDescription fileName (takeFileName fileName)
     return CodingStyleWarning{..}
 
 parseForbiddenExtensionWarning :: Parser CodingStyleWarning
@@ -75,3 +78,10 @@ parseForbiddenExtensionWarning = do
             , description = "language extensions are forbidden"
             , ruleCode = "H-E1"
             }
+
+replace :: String -> String -> String -> String
+replace haystack [] _ = haystack
+replace [] _ _ = []
+replace haystack@(c : cs) needle replacement
+    | needle `isPrefixOf` haystack = replacement ++ drop (length needle) haystack
+    | otherwise = c : replace cs needle replacement

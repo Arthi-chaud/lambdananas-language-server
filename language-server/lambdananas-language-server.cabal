@@ -49,6 +49,7 @@ library
       base >=4.7 && <5
     , co-log-core
     , directory
+    , filepath
     , lens
     , lsp
     , megaparsec

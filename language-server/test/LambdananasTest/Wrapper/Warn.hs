@@ -31,6 +31,16 @@ specs =
                     , ruleCode = "H-E1"
                     , description = "language extensions are forbidden"
                     }
+        it "should remove filepath in description" $
+            testParse
+                "src/Lambdananas/LanguageServer/Events.hs:1: MINOR:H-G1 # src/Lambdananas/LanguageServer/Events.hs has a badly formatted Epitech header"
+                CodingStyleWarning
+                    { line = 1
+                    , level = Minor
+                    , fileName = "src/Lambdananas/LanguageServer/Events.hs"
+                    , ruleCode = "H-G1"
+                    , description = "Events.hs has a badly formatted Epitech header"
+                    }
   where
     testParse str obj = case parse parseCodingStyleWarning "" str of
         Left err -> expectationFailure $ show err

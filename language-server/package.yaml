@@ -36,6 +36,7 @@ library:
     - co-log-core
     - lens
     - directory
+    - filepath
 
 executables:
   lambdananas-language-server:
