@@ -1,14 +1,15 @@
 module Lambdananas.LanguageServer.Diagnostic (
     emitDiagnostics,
     loadCodingStyleWarnings,
+    getAndEmitDiagnostics,
     loadAndEmitDiagnostics,
 ) where
 
 import Control.Monad.Except
 import Control.Monad.IO.Class
 import qualified Data.Text as T
-import Lambdananas.LanguageServer.Error
 import Lambdananas.LanguageServer.Logging
+import Lambdananas.LanguageServer.Messages
 import Lambdananas.LanguageServer.Monad
 import Lambdananas.Wrapper (getCodingStyleWarnings)
 import Lambdananas.Wrapper.Warn
@@ -16,7 +17,23 @@ import Language.LSP.Diagnostics
 import Language.LSP.Protocol.Types
 import Language.LSP.Server
 
--- | Load warnings for the file at the given uri, saves them in the state,
+-- | Load warnings (only if it is not already in state) for the file at the given uri, saves them in the state,
+-- and emit them.
+getAndEmitDiagnostics :: Uri -> LSM ()
+getAndEmitDiagnostics uri = do
+    state <- getState
+    case uriToFilePath uri of
+        Nothing -> do
+            let errMsg = "Could not get file path from uri"
+            errorLog errMsg
+            sendErrorMessage errMsg
+        Just filePath -> case lookup filePath state of
+            Nothing -> do
+                warns <- loadCodingStyleWarnings filePath
+                emitDiagnostics (toNormalizedUri uri) warns
+            Just warns -> emitDiagnostics (toNormalizedUri uri) warns
+
+-- | Load warnings (even if it is already in state) for the file at the given uri, saves them in the state,
 -- and emit them.
 loadAndEmitDiagnostics :: Uri -> LSM ()
 loadAndEmitDiagnostics uri =
