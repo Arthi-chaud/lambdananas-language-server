@@ -24,14 +24,15 @@ source-repository head
 library
   exposed-modules:
       Lambdananas.LanguageServer.Diagnostic
-      Lambdananas.LanguageServer.Error
       Lambdananas.LanguageServer.Events
       Lambdananas.LanguageServer.Events.Hover
       Lambdananas.LanguageServer.Events.Init
-      Lambdananas.LanguageServer.Events.Open
+      Lambdananas.LanguageServer.Events.PullDiagnostics
       Lambdananas.LanguageServer.Events.Save
+      Lambdananas.LanguageServer.Events.TextDocumentSync
       Lambdananas.LanguageServer.Initialization
       Lambdananas.LanguageServer.Logging
+      Lambdananas.LanguageServer.Messages
       Lambdananas.LanguageServer.Monad
       Lambdananas.LanguageServer.Server
       Lambdananas.LanguageServer.State
@@ -47,6 +48,7 @@ library
   build-depends:
       base >=4.7 && <5
     , co-log-core
+    , directory
     , lens
     , lsp
     , megaparsec

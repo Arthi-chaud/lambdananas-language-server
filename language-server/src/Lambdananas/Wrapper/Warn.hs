@@ -31,7 +31,8 @@ data CodingStyleWarning = CodingStyleWarning
     { level :: SeverityLevel
     , ruleCode :: String
     , fileName :: String
-    , line :: Int
+    , -- One-indexed
+      line :: Int
     , description :: String
     }
     deriving (Show, Eq)
