@@ -19,11 +19,11 @@ onOpen = notificationHandler SMethod_TextDocumentDidOpen $ \notif -> do
     getAndEmitDiagnostics fileUri
 
 onChange :: Handlers LSM
-onChange = notificationHandler SMethod_TextDocumentDidChange $ \notif -> do
+onChange = notificationHandler SMethod_TextDocumentDidChange $ \_ -> do
     debugLog "Received 'change' notification"
     return ()
 
 onClose :: Handlers LSM
-onClose = notificationHandler SMethod_TextDocumentDidClose $ \notif -> do
+onClose = notificationHandler SMethod_TextDocumentDidClose $ \_ -> do
     debugLog "Received 'close' notification"
     return ()

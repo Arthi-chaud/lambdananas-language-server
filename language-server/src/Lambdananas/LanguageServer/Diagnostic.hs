@@ -74,16 +74,25 @@ emitDiagnostics uri warns =
 -- | Turn a 'CodingStyleWarning' on an LSP 'Diagnostic' model
 warnToDiagnostic :: CodingStyleWarning -> Diagnostic
 warnToDiagnostic warn =
+    -- see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic
     let
-        linePos = (fromIntegral $ line warn - 1)
-        range = Range (Position linePos 0) (Position linePos 100)
+        linePos = fromIntegral $ line warn - 1
+        range =
+            -- Note: lambdananas only gives us the line/row, not the column
+            Range
+                (Position linePos 0)
+                -- might be safe, since CS imposes length of 80 max
+                (Position linePos 100000)
         severity = Just $ getSeverity $ level warn
         getSeverity Major = DiagnosticSeverity_Error
         getSeverity Minor = DiagnosticSeverity_Warning
         getSeverity Info = DiagnosticSeverity_Information
-        code = Nothing
-        codeDesc = Nothing
-        src = Nothing
+        code = Just $ InR $ T.pack $ ruleCode warn
+        codeDesc =
+            Just $
+                CodeDescription $
+                    filePathToUri "https://intra.epitech.eu/file/Public/technical-documentations/Haskell/epitech_haskell_coding_style.pdf"
+        src = Just $ T.pack "lambdananas"
         text = T.pack (description warn)
         tags = Just []
         related = Nothing
