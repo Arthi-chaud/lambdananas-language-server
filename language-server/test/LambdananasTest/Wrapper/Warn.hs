@@ -31,6 +31,16 @@ specs =
                     , ruleCode = "H-E1"
                     , description = "language extensions are forbidden"
                     }
+        it "should parse bogus 'could not parse' message" $
+            testParse
+                " contains forbidden extensions"
+                CodingStyleWarning
+                    { line = 1
+                    , level = Major
+                    , fileName = ""
+                    , ruleCode = "H-E1"
+                    , description = "Lambdananas could not parse this file because of a non-standard syntax"
+                    }
         it "should remove filepath in description" $
             testParse
                 "src/Lambdananas/LanguageServer/Events.hs:1: MINOR:H-G1 # src/Lambdananas/LanguageServer/Events.hs has a badly formatted Epitech header"
@@ -42,6 +52,6 @@ specs =
                     , description = "Events.hs has a badly formatted Epitech header"
                     }
   where
-    testParse str obj = case parse parseCodingStyleWarning "" str of
+    testParse str obj = case parse (parseCodingStyleWarning "") "" str of
         Left err -> expectationFailure $ show err
         Right parsed -> parsed `shouldBe` obj

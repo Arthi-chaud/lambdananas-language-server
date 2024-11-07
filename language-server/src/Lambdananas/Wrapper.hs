@@ -48,10 +48,9 @@ getCodingStyleWarnings filePath = runExceptT $ do
     let trim = dropWhile isSpace . dropWhileEnd isSpace
         splitOutput =
             filter
-                -- In some cases, H-E1 does not contains the file name. We skip it
-                (\s -> not (null s) && s /= "contains forbidden extensions")
-                $ trim <$> lines rawOutput
-        parseWarning s = case M.parse parseCodingStyleWarning "" s of
+                (not . null)
+                (trim <$> lines rawOutput)
+        parseWarning s = case M.parse (parseCodingStyleWarning filePath) "" s of
             Left e -> Left $ OutputParsingError $ show e
             Right warn -> Right warn
         groupByFilePath l =

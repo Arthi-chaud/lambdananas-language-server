@@ -52,9 +52,23 @@ parseRuleCode = do
 -- ./app/Main.hs:73: MINOR:H-F3 # too long line
 --
 -- ./src/Lambdananas/Wrapper.hs contains forbidden extensions
+--  (Bug)
+--  contains forbidden extensions
 -- @
-parseCodingStyleWarning :: Parser CodingStyleWarning
-parseCodingStyleWarning = try parseForbiddenExtensionWarning <|> parseRegularWarning
+parseCodingStyleWarning :: FilePath -> Parser CodingStyleWarning
+parseCodingStyleWarning fp = try (parseBogusExtensionWarning fp) <|> try parseForbiddenExtensionWarning <|> parseRegularWarning
+
+parseBogusExtensionWarning :: FilePath -> Parser CodingStyleWarning
+parseBogusExtensionWarning filepath = do
+    _ <- many (char ' ') *> string "contains forbidden extensions"
+    return
+        CodingStyleWarning
+            { fileName = filepath
+            , level = Major
+            , line = 1
+            , description = "Lambdananas could not parse this file because of a non-standard syntax"
+            , ruleCode = "H-E1"
+            }
 
 parseRegularWarning :: Parser CodingStyleWarning
 parseRegularWarning = do
