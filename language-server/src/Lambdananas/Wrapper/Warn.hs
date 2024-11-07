@@ -53,14 +53,15 @@ parseRuleCode = do
 -- @
 parseCodingStyleWarning :: Parser CodingStyleWarning
 parseCodingStyleWarning = try parseForbiddenExtensionWarning <|> parseRegularWarning
-  where
-    parseRegularWarning = do
-        fileName <- manyTill asciiChar (char ':')
-        line <- L.decimal
-        level <- string ": " *> parseSeverityLevel
-        ruleCode <- char ':' *> parseRuleCode
-        description <- string " # " *> many asciiChar
-        return CodingStyleWarning{..}
+
+parseRegularWarning :: Parser CodingStyleWarning
+parseRegularWarning = do
+    fileName <- manyTill asciiChar (char ':')
+    line <- L.decimal
+    level <- string ": " *> parseSeverityLevel
+    ruleCode <- char ':' *> parseRuleCode
+    description <- string " # " *> many asciiChar
+    return CodingStyleWarning{..}
 
 parseForbiddenExtensionWarning :: Parser CodingStyleWarning
 parseForbiddenExtensionWarning = do

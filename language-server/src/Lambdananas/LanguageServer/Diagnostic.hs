@@ -16,6 +16,7 @@ import Lambdananas.Wrapper.Warn
 import Language.LSP.Diagnostics
 import Language.LSP.Protocol.Types
 import Language.LSP.Server
+import Text.Printf (printf)
 
 -- | Load warnings (only if it is not already in state) for the file at the given uri, saves them in the state,
 -- and emit them.
@@ -93,7 +94,7 @@ warnToDiagnostic warn =
                 CodeDescription $
                     filePathToUri "https://intra.epitech.eu/file/Public/technical-documentations/Haskell/epitech_haskell_coding_style.pdf"
         src = Just $ T.pack "lambdananas"
-        text = T.pack (description warn)
+        text = T.pack (printf "%s (%s)" (description warn) (show $ level warn))
         tags = Just []
         related = Nothing
         dataValue = Nothing
