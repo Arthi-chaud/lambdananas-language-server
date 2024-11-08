@@ -5,8 +5,10 @@ module Lambdananas.LanguageServer.Diagnostic (
     loadAndEmitDiagnostics,
 ) where
 
+import Control.Monad (when)
 import Control.Monad.Except
 import Control.Monad.IO.Class
+import Data.List (isPrefixOf)
 import qualified Data.Text as T
 import Lambdananas.LanguageServer.Logging
 import Lambdananas.LanguageServer.Messages
@@ -16,6 +18,7 @@ import Lambdananas.Wrapper.Warn
 import Language.LSP.Diagnostics
 import Language.LSP.Protocol.Types
 import Language.LSP.Server
+import System.FilePath
 import Text.Printf (printf)
 
 -- | Load warnings (only if it is not already in state) for the file at the given uri, saves them in the state,
@@ -29,9 +32,7 @@ getAndEmitDiagnostics uri = do
             errorLog errMsg
             sendErrorMessage errMsg
         Just filePath -> case lookup filePath state of
-            Nothing -> do
-                warns <- loadCodingStyleWarnings filePath
-                emitDiagnostics (toNormalizedUri uri) warns
+            Nothing -> loadAndEmitDiagnostics' filePath uri
             Just warns -> emitDiagnostics (toNormalizedUri uri) warns
 
 -- | Load warnings (even if it is already in state) for the file at the given uri, saves them in the state,
@@ -43,9 +44,29 @@ loadAndEmitDiagnostics uri =
             let errMsg = "Could not get file path from uri"
             errorLog errMsg
             sendErrorMessage errMsg
-        Just filePath -> do
-            warns <- loadCodingStyleWarnings filePath
-            emitDiagnostics (toNormalizedUri uri) warns
+        Just filePath -> loadAndEmitDiagnostics' filePath uri
+
+-- Load and emit if in an applicable folder
+--
+-- If not applicable, diagnostics wont be loaded
+loadAndEmitDiagnostics' :: FilePath -> Uri -> LSM ()
+loadAndEmitDiagnostics' fp uri = do
+    mrootPath <- getRootPath
+    maybe
+        loadAndEmit
+        ( \rootPath ->
+            when
+                (isApplicableFolder rootPath fp)
+                loadAndEmit
+        )
+        mrootPath
+  where
+    loadAndEmit =
+        loadCodingStyleWarnings fp >>= emitDiagnostics (toNormalizedUri uri)
+    isApplicableFolder rootPath filePath =
+        let relPath = makeRelative rootPath filePath
+         in -- We could have filtered by app and src, but what about pool days?
+            not $ any (`isPrefixOf` relPath) ["test", "bonus/"]
 
 -- | Calls lambdananas, update state with new warnings, and return them
 loadCodingStyleWarnings :: FilePath -> LSM [CodingStyleWarning]
