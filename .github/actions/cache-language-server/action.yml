@@ -13,7 +13,9 @@ runs:
     - name: Install GHC using Stack
       shell: sh
       if: steps.ghc.outputs.cache-hit != 'true'
-      run: stack setup 9.6.6 --install-ghc  
+      run: |
+        stack setup 9.6.6 --install-ghc
+        stack setup 9.6.4 --install-ghc
     - name: Cache Haskell dependencies
       uses: actions/cache@v3
       with:
@@ -26,3 +28,14 @@ runs:
     - name: Install Stack
       shell: bash
       run: curl -sSL https://get.haskellstack.org/ | sh -s - -f
+    - name: Clone Lambdananas
+      uses: actions/checkout@master
+      with:
+        repository: Epitech/Lambdananas 
+        path: Lambdananas 
+    - name: Install Lambdananas
+      shell: bash
+      run: |
+        cd Lambdananas
+        echo 'system-ghc: true' >> stack.yaml
+        stack install
