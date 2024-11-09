@@ -55,9 +55,11 @@ loadAndEmitDiagnostics' fp uri = do
     maybe
         loadAndEmit
         ( \rootPath ->
-            when
-                (isApplicableFolder rootPath fp)
-                loadAndEmit
+            -- Note: Not publishing if empty list might cinfuse client
+            -- it might think it is still loading
+            if isApplicableFolder rootPath fp
+                then loadAndEmit
+                else emitDiagnostics (toNormalizedUri uri) []
         )
         mrootPath
   where
