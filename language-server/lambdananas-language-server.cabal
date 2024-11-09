@@ -76,6 +76,7 @@ test-suite lambdananas-language-server-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      LambdananasTest.LanguageServer.Diagnostics
       LambdananasTest.Wrapper.Warn
       Paths_lambdananas_language_server
   autogen-modules:
@@ -87,5 +88,6 @@ test-suite lambdananas-language-server-test
       base >=4.7 && <5
     , hspec
     , lambdananas-language-server
+    , lsp-test
     , megaparsec
   default-language: Haskell2010

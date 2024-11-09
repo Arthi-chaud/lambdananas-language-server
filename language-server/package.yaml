@@ -61,3 +61,4 @@ tests:
     - lambdananas-language-server
     - hspec
     - megaparsec
+    - lsp-test
