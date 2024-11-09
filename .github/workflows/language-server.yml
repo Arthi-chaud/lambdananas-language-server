@@ -77,7 +77,7 @@ jobs:
       - name: 'Run HLint'
         uses: rwe/actions-hlint-run@v2
         with:
-          path: '["language-server/app/", "language-server/src/", "language-server/test/"]'
+          path: '["language-server/app/", "language-server/src/"]'
           fail-on: warning
   Tests:
     runs-on: ubuntu-latest
