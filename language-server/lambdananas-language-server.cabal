@@ -23,6 +23,7 @@ source-repository head
 
 library
   exposed-modules:
+      Lambdananas.LanguageServer.Constants
       Lambdananas.LanguageServer.Diagnostic
       Lambdananas.LanguageServer.Events
       Lambdananas.LanguageServer.Events.Hover

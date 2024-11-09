@@ -10,6 +10,7 @@ import Control.Monad.Except
 import Control.Monad.IO.Class
 import Data.List (isPrefixOf)
 import qualified Data.Text as T
+import Lambdananas.LanguageServer.Constants (codingStyleUrl)
 import Lambdananas.LanguageServer.Logging
 import Lambdananas.LanguageServer.Messages
 import Lambdananas.LanguageServer.Monad
@@ -115,7 +116,7 @@ warnToDiagnostic warn =
         codeDesc =
             Just $
                 CodeDescription $
-                    filePathToUri "https://intra.epitech.eu/file/Public/technical-documentations/Haskell/epitech_haskell_coding_style.pdf"
+                    filePathToUri codingStyleUrl
         src = Just $ T.pack "lambdananas"
         text = T.pack (printf "%s (%s)" (description warn) (show $ level warn))
         tags = Just []
