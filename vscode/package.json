@@ -1,0 +1,62 @@
+{
+  "name": "lambdananas-coding-style-checker",
+  "displayName": "Lambdananas for VSCode",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lambdananas.commands.restartServer",
+        "title": "Lambdananas: Restart LSP server",
+        "description": "Restart the Lambdananas LSP server"
+      },
+      {
+        "command": "lambdananas.commands.startServer",
+        "title": "Lambdananas: Start LSP server",
+        "description": "Start the Lambdananas LSP server"
+      },
+      {
+        "command": "lambdananas.commands.stopServer",
+        "title": "Lambdananas: Stop LSP server",
+        "description": "Stop the Lambdananas LSP server"
+      },
+      {
+        "command": "lambdananas.commands.openCodingStylePDF",
+        "title": "Lambdananas: Open Coding Style PDF",
+        "description": "Open the PDF in your browser"
+      }
+    ]
+  },
+  "configuration": {
+    "type": "object",
+    "title": "Configuration for Lambdananas",
+    "properties": {}
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.9",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.95.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}
