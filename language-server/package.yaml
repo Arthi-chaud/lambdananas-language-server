@@ -37,7 +37,7 @@ library:
     - lens
     - directory
     - filepath
-
+    - time
 executables:
   lambdananas-language-server:
     main:                Main.hs
