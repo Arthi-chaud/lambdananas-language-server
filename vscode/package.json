@@ -1,17 +1,44 @@
 {
   "name": "lambdananas-coding-style-checker",
   "displayName": "Lambdananas for VSCode",
-  "description": "",
+  "description": "VSCode Extension for the Lambdananas Coding Style Checker",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
   },
-  "categories": [
-    "Other"
+  "keywords": [
+    "language",
+    "haskell",
+    "coding-style",
+    "lsp"
   ],
-  "activationEvents": [],
+  "homepage": "https://github.com/Arthi-chaud/lambdananas-language-server",
+  "repository": "https://github.com/Arthi-chaud/lambdananas-language-server.git",
+  "bugs": {
+    "url": "https://github.com/Arthi-chaud/lambdananas-language-server/issues"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [
+    "onLanguage:haskell"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "haskell",
+        "aliases": [
+          "Haskell",
+          "haskell"
+        ],
+        "extensions": [
+          ".hs"
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "lambdananas.commands.restartServer",
