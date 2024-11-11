@@ -1,6 +1,6 @@
 module Lambdananas.LanguageServer.Events (eventHandlers) where
 
-import Lambdananas.LanguageServer.Events.Hover
+import Lambdananas.LanguageServer.Events.CodeAction (onCodeActionRequest)
 import Lambdananas.LanguageServer.Events.Init
 import Lambdananas.LanguageServer.Events.PullDiagnostics (onPullDiagnostics)
 import Lambdananas.LanguageServer.Events.Save
@@ -11,11 +11,9 @@ import Language.LSP.Server (Handlers)
 eventHandlers :: Handlers LSM
 eventHandlers =
     mconcat
-        [ onHover
-        , onInit
-        , onOpen
-        , onChange
-        , onClose
+        [ onInit
+        , onTextDocumentEvent
         , onSave
         , onPullDiagnostics
+        , onCodeActionRequest
         ]

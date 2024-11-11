@@ -6,6 +6,7 @@ This repository contains the Language Server for [Lambdananas](https://github.co
 
 - See Lambdananas' warnings in your IDE
 - Quick access to EPITECH's Coding Style Documentation
+- Insert EPITECH Header using Code Actions
 
 ![VSCode](./assets/vscode.png)
 ![VSCode Diagnostics](./assets/vscode-diags.png)
