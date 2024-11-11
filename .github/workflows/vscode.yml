@@ -1,0 +1,44 @@
+name: "VSCode Extension"
+on:
+  pull_request:
+    branches: [ main]
+  push:
+    branches: [ main]
+
+defaults:
+  run:
+    working-directory: ./vscode
+
+jobs:
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      vscode: ${{ steps.filter.outputs.vscode }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            vscode:
+              - 'vscode/**'
+              - '.github/workflows/vscode.yml'
+  Build:
+    needs: changes
+    if: ${{ needs.changes.outputs.vscode == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-vscode
+      - name: Install Dependencies
+        run: npm install 
+      - name: Build
+        run: npm run compile 

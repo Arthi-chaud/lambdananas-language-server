@@ -1,0 +1,16 @@
+name: 'Cache (VSCode)'
+description: 'Cache for VSCode'
+runs:
+  using: "composite"
+  steps:
+    - name: Add build dependencies to container
+      shell: sh
+      run: apk add --update --no-progress tar
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+          path: |
+            ./vscode/node_modules
+            ./vscode/out
+          key: vscode-deps-${{ hashFiles('vscode/package-lock.json')  }}
+          restore-keys: vscode-deps-
