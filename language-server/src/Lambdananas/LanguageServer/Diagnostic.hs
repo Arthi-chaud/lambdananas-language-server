@@ -5,11 +5,11 @@ module Lambdananas.LanguageServer.Diagnostic (
     loadAndEmitDiagnostics,
 ) where
 
-import Control.Monad (when)
 import Control.Monad.Except
 import Control.Monad.IO.Class
 import Data.List (isPrefixOf)
 import qualified Data.Text as T
+import Data.Time.Clock
 import Lambdananas.LanguageServer.Logging
 import Lambdananas.LanguageServer.Messages
 import Lambdananas.LanguageServer.Monad
@@ -89,11 +89,14 @@ loadCodingStyleWarnings filePath = do
 
 -- | Publish diagnostics for the given file
 emitDiagnostics :: NormalizedUri -> [CodingStyleWarning] -> LSM ()
-emitDiagnostics uri warns =
+emitDiagnostics uri warns = do
+    time <- liftIO getCurrentTime
     let diagnostics = partitionBySource $ warnToDiagnostic <$> warns
         maxDiags = 100
-        version = Just 0
-     in publishDiagnostics maxDiags uri version diagnostics
+        timestamp = floor $ utctDayTime time
+    publishDiagnostics maxDiags uri (Just timestamp) diagnostics
+
+-- try to call flushDiagnosticsBySource 100 % Just srcName
 
 -- | Turn a 'CodingStyleWarning' on an LSP 'Diagnostic' model
 warnToDiagnostic :: CodingStyleWarning -> Diagnostic
