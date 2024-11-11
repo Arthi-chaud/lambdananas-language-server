@@ -25,7 +25,7 @@ library
   exposed-modules:
       Lambdananas.LanguageServer.Diagnostic
       Lambdananas.LanguageServer.Events
-      Lambdananas.LanguageServer.Events.Hover
+      Lambdananas.LanguageServer.Events.CodeAction
       Lambdananas.LanguageServer.Events.Init
       Lambdananas.LanguageServer.Events.PullDiagnostics
       Lambdananas.LanguageServer.Events.Save
@@ -48,6 +48,7 @@ library
   build-depends:
       base >=4.7 && <5
     , co-log-core
+    , containers
     , directory
     , filepath
     , lens

@@ -3,6 +3,7 @@ module Lambdananas.LanguageServer.Diagnostic (
     loadCodingStyleWarnings,
     getAndEmitDiagnostics,
     loadAndEmitDiagnostics,
+    warnToDiagnostic,
 ) where
 
 import Control.Monad.Except

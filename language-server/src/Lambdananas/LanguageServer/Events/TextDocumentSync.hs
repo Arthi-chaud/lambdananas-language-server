@@ -1,7 +1,5 @@
 module Lambdananas.LanguageServer.Events.TextDocumentSync (
-    onOpen,
-    onChange,
-    onClose,
+    onTextDocumentEvent,
 ) where
 
 import Control.Lens
@@ -11,6 +9,9 @@ import Lambdananas.LanguageServer.Monad (LSM)
 import Language.LSP.Protocol.Lens
 import Language.LSP.Protocol.Message (SMethod (..))
 import Language.LSP.Server
+
+onTextDocumentEvent :: Handlers LSM
+onTextDocumentEvent = mconcat [onOpen, onChange, onClose]
 
 onOpen :: Handlers LSM
 onOpen = notificationHandler SMethod_TextDocumentDidOpen $ \notif -> do

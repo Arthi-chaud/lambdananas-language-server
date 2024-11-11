@@ -18,7 +18,8 @@ runServer = do
     state <- newMVar ([] :: State)
     let configOptions =
             defaultOptions
-                { optTextDocumentSync =
+                { optCodeActionKinds = Just [CodeActionKind_QuickFix]
+                , optTextDocumentSync =
                     Just $
                         -- See https://learn.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.languageserver.protocol.textdocumentsyncoptions?view=visualstudiosdk-2022
                         TextDocumentSyncOptions

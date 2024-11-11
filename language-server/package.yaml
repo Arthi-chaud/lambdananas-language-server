@@ -38,6 +38,7 @@ library:
     - directory
     - filepath
     - time
+    - containers
 executables:
   lambdananas-language-server:
     main:                Main.hs
