@@ -17,6 +17,7 @@
   "bugs": {
     "url": "https://github.com/Arthi-chaud/lambdananas-language-server/issues"
   },
+  "publisher": "Arthi-chaud",
   "categories": [
     "Programming Languages",
     "Linters"
