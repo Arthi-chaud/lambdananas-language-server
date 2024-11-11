@@ -7,12 +7,16 @@ import {
   Uri,
   commands,
   env,
+  window,
+  OutputChannel,
+  languages,
 } from "vscode";
 
 import {
   ExecutableOptions,
   LanguageClient,
   LanguageClientOptions,
+  Logger,
   ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
@@ -130,10 +134,13 @@ export function activateForFolder(
   };
 
   const clientName = "Lambdananas" + (folder ? ` (${folder.name})` : "");
+  const outputChannel: OutputChannel = window.createOutputChannel(clientName);
   const pattern = folder ? `${folder.uri.fsPath}/**/*` : "**/*";
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "haskell", pattern }],
     synchronize: {},
+    outputChannel,
+    outputChannelName: clientName,
     diagnosticCollectionName: clientName,
     // Launch the server in the directory of the workspace folder.
     workspaceFolder: folder,
