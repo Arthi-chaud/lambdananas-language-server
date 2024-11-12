@@ -9,7 +9,6 @@ import {
   env,
   window,
   OutputChannel,
-  languages,
 } from "vscode";
 
 import {
@@ -138,7 +137,9 @@ export function activateForFolder(
   const pattern = folder ? `${folder.uri.fsPath}/**/*` : "**/*";
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "haskell", pattern }],
-    synchronize: {},
+    synchronize: {
+      fileEvents: workspace.createFileSystemWatcher("**/*.hs")
+    },
     outputChannel,
     outputChannelName: clientName,
     diagnosticCollectionName: clientName,
