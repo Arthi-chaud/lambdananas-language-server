@@ -62,4 +62,7 @@ tests:
     - lambdananas-language-server
     - hspec
     - megaparsec
+    - text
+    - lsp-types
     - lsp-test
+    - filepath
