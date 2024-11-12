@@ -1,6 +1,7 @@
 module Lambdananas.LanguageServer.Events (eventHandlers) where
 
 import Lambdananas.LanguageServer.Events.CodeAction (onCodeActionRequest)
+import Lambdananas.LanguageServer.Events.FileEvents (onDelete, onFileEvent, onRename)
 import Lambdananas.LanguageServer.Events.Init
 import Lambdananas.LanguageServer.Events.PullDiagnostics (onPullDiagnostics)
 import Lambdananas.LanguageServer.Events.Save
@@ -16,4 +17,7 @@ eventHandlers =
         , onSave
         , onPullDiagnostics
         , onCodeActionRequest
+        , onFileEvent
+        , onDelete
+        , onRename
         ]

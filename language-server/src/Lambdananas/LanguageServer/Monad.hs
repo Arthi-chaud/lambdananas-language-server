@@ -2,6 +2,7 @@ module Lambdananas.LanguageServer.Monad (
     LSM,
     getState,
     setState,
+    withState,
     getCodingStyleWarningForFile,
 ) where
 
@@ -30,3 +31,10 @@ getCodingStyleWarningForFile uri = do
     case uriToFilePath uri of
         Nothing -> return []
         Just filePath -> return $ fromMaybe [] $ lookup filePath state
+
+withState :: (State -> (a, State)) -> LSM a
+withState f = do
+    state <- getState
+    let (res, newState) = f state
+    setState newState
+    return res
