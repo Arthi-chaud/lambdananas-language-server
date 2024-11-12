@@ -26,6 +26,7 @@ library
       Lambdananas.LanguageServer.Diagnostic
       Lambdananas.LanguageServer.Events
       Lambdananas.LanguageServer.Events.CodeAction
+      Lambdananas.LanguageServer.Events.FileEvents
       Lambdananas.LanguageServer.Events.Init
       Lambdananas.LanguageServer.Events.PullDiagnostics
       Lambdananas.LanguageServer.Events.Save
