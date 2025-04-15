@@ -37,6 +37,7 @@ runServer = do
                 , configSection = "lambdananas"
                 , doInitialize = \env _req -> do
                     runReaderT (runLspT env initialize) state
+                    -- TODO In case of error, return ResponseError
                     return (Right env)
                 , staticHandlers = const eventHandlers
                 , interpretHandler = \env ->

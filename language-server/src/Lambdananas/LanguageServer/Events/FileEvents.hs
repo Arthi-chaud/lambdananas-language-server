@@ -15,6 +15,7 @@ import Language.LSP.Protocol.Message (SMethod (..))
 import Language.LSP.Protocol.Types
 import Language.LSP.Server
 
+-- | Callback when a change has been detected for a file/folder in the IDE workspace
 onFileEvent :: Handlers LSM
 onFileEvent = notificationHandler SMethod_WorkspaceDidChangeWatchedFiles $ \notif -> do
     debugLog "Received 'workspace changed' notification"
@@ -26,9 +27,13 @@ onFileEvent = notificationHandler SMethod_WorkspaceDidChangeWatchedFiles $ \noti
                 emitDiagnostics (toNormalizedUri u) []
         case e ^. type_ of
             FileChangeType_Deleted -> removeUriFromState eventUri
+            -- TODO: don't remove, just reload diagnostics?
             FileChangeType_Changed -> removeUriFromState eventUri
             _ -> return ()
 
+-- | Callback on file deletion
+--
+-- Removes the diagnostic for the given file from the state
 onDelete :: Handlers LSM
 onDelete = notificationHandler SMethod_WorkspaceDidDeleteFiles $ \notif -> do
     debugLog "Received 'file deletion' notification"
@@ -37,6 +42,9 @@ onDelete = notificationHandler SMethod_WorkspaceDidDeleteFiles $ \notif -> do
     -- Flushing diagnostics for the old uri
     forM_ deletedUris (\u -> emitDiagnostics (toNormalizedUri u) [])
 
+-- | Callback on file renaming
+--
+-- Renames the file in the state
 onRename :: Handlers LSM
 onRename = notificationHandler SMethod_WorkspaceDidRenameFiles $ \notif -> do
     debugLog "Received 'file rename' notification"

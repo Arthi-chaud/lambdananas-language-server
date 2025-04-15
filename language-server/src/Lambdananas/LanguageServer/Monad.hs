@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 module Lambdananas.LanguageServer.Monad (
     LSM,
     getState,
@@ -14,6 +16,8 @@ import Lambdananas.Wrapper.Warn
 import Language.LSP.Protocol.Types
 import Language.LSP.Server
 
+-- | The monad used across the LSP
+-- to allow accessing the state and run IO
 type LSM = LspT () (ReaderT (MVar State) IO)
 
 getState :: LSM State
@@ -35,6 +39,6 @@ getCodingStyleWarningForFile uri = do
 withState :: (State -> (a, State)) -> LSM a
 withState f = do
     state <- getState
-    let (res, newState) = f state
+    let !(res, newState) = f state
     setState newState
     return res
