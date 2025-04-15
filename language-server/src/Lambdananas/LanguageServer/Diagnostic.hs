@@ -47,25 +47,25 @@ loadAndEmitDiagnostics uri =
             sendErrorMessage errMsg
         Just filePath -> loadAndEmitDiagnostics' filePath uri
 
--- Load and emit if in an applicable folder
+-- | Load and emit if in an applicable folder
 --
 -- If not applicable, diagnostics wont be loaded
 loadAndEmitDiagnostics' :: FilePath -> Uri -> LSM ()
 loadAndEmitDiagnostics' fp uri = do
     mrootPath <- getRootPath
-    maybe
-        loadAndEmit
-        ( \rootPath ->
-            -- Note: Not publishing if empty list might cinfuse client
+    case mrootPath of
+        Nothing -> loadAndEmit
+        Just rootPath ->
+            -- Note: Not publishing if empty list might confuse client
             -- it might think it is still loading
             if isApplicableFolder rootPath fp
                 then loadAndEmit
                 else emitDiagnostics (toNormalizedUri uri) []
-        )
-        mrootPath
   where
+    -- Load diagnstic for file
     loadAndEmit =
         loadCodingStyleWarnings fp >>= emitDiagnostics (toNormalizedUri uri)
+    --  Returns true if the file path is one of a file that is subject to coding style
     isApplicableFolder rootPath filePath =
         let relPath = makeRelative rootPath filePath
          in -- We could have filtered by app and src, but what about pool days?
@@ -74,21 +74,23 @@ loadAndEmitDiagnostics' fp uri = do
 -- | Calls lambdananas, update state with new warnings, and return them
 loadCodingStyleWarnings :: FilePath -> LSM [CodingStyleWarning]
 loadCodingStyleWarnings filePath = do
-    res <- liftIO $ runExceptT $ do
-        warnlist <- ExceptT $ getCodingStyleWarnings filePath
+    eitherWarns <- liftIO $ runExceptT $ do
+        warnlist <- getCodingStyleWarnings filePath
         return $ case warnlist of
             (warns : _) -> snd warns
             [] -> []
-    case res of
+    case eitherWarns of
         Left err -> sendErrorMessage (show err) >> return []
         Right warns -> do
             state <- getState
+            -- Remove the previous diagnostic for that file
+            -- before pushing them in the state
             let cleanState = filter (\(fp, _) -> fp /= filePath) state
                 newState = (filePath, warns) : cleanState
             setState newState
             return warns
 
--- | Publish diagnostics for the given file
+-- | Publish the given diagnostics for the given file
 emitDiagnostics :: NormalizedUri -> [CodingStyleWarning] -> LSM ()
 emitDiagnostics uri warns = do
     time <- liftIO getCurrentTime
@@ -97,33 +99,31 @@ emitDiagnostics uri warns = do
         timestamp = floor $ utctDayTime time
     publishDiagnostics maxDiags uri (Just timestamp) diagnostics
 
--- try to call flushDiagnosticsBySource 100 % Just srcName
-
 -- | Turn a 'CodingStyleWarning' on an LSP 'Diagnostic' model
 warnToDiagnostic :: CodingStyleWarning -> Diagnostic
 warnToDiagnostic warn =
+    Diagnostic range severity code codeDesc src text tags related dataValue
+  where
     -- see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic
-    let
-        linePos = fromIntegral $ line warn - 1
-        range =
-            -- Note: lambdananas only gives us the line/row, not the column
-            Range
-                (Position linePos 0)
-                -- might be safe, since CS imposes length of 80 max
-                (Position linePos 100000)
-        severity = Just $ getSeverity $ level warn
-        getSeverity Major = DiagnosticSeverity_Error
-        getSeverity Minor = DiagnosticSeverity_Warning
-        getSeverity Info = DiagnosticSeverity_Information
-        code = Just $ InR $ T.pack $ ruleCode warn
-        codeDesc =
-            Just $
-                CodeDescription $
-                    filePathToUri "https://intra.epitech.eu/file/Public/technical-documentations/Haskell/epitech_haskell_coding_style.pdf"
-        src = Just $ T.pack "lambdananas"
-        text = T.pack (printf "%s (%s)" (description warn) (show $ level warn))
-        tags = Just []
-        related = Nothing
-        dataValue = Nothing
-     in
-        Diagnostic range severity code codeDesc src text tags related dataValue
+
+    linePos = fromIntegral $ line warn - 1
+    range =
+        -- Note: lambdananas only gives us the line/row, not the column
+        Range
+            (Position linePos 0)
+            -- might be safe, since CS imposes length of 80 max
+            (Position linePos 100000)
+    severity = Just $ getSeverity $ level warn
+    getSeverity Major = DiagnosticSeverity_Error
+    getSeverity Minor = DiagnosticSeverity_Warning
+    getSeverity Info = DiagnosticSeverity_Information
+    code = Just $ InR $ T.pack $ ruleCode warn
+    codeDesc =
+        Just $
+            CodeDescription $
+                filePathToUri "https://intra.epitech.eu/file/Public/technical-documentations/Haskell/epitech_haskell_coding_style.pdf"
+    src = Just $ T.pack "lambdananas"
+    text = T.pack (printf "%s (%s)" (description warn) (show $ level warn))
+    tags = Just []
+    related = Nothing
+    dataValue = Nothing

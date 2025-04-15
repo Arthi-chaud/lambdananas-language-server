@@ -35,16 +35,16 @@ instance Show LambdananasError where
         "lambdananas gave us an unexpected output:\n" ++ str
     show (UnknownError str) = "An unknown error occured:\n" ++ str
 
--- | Invokes lambdananas and returns the reported 'CodingStyleWarning'
+-- | Invokes lambdananas and returns the reported 'CodingStyleWarning's
 --
 -- The 'FilePath' can be a directory or a file
 --
 -- The 'CodingStyleWarning' are grouped by source file
 getCodingStyleWarnings ::
     FilePath ->
-    IO (Either LambdananasError [(FilePath, [CodingStyleWarning])])
-getCodingStyleWarnings filePath = runExceptT $ do
-    rawOutput <- ExceptT $ runLambdananas [filePath]
+    ExceptT LambdananasError IO [(FilePath, [CodingStyleWarning])]
+getCodingStyleWarnings filePath = do
+    rawOutput <- runLambdananas [filePath]
     let trim = dropWhile isSpace . dropWhileEnd isSpace
         splitOutput =
             filter
@@ -58,34 +58,36 @@ getCodingStyleWarnings filePath = runExceptT $ do
                 <$> groupBy
                     (\w1 w2 -> fileName w1 == fileName w2)
                     l
-    warns <- liftEither $ mapM parseWarning splitOutput
+    warns <- liftEither $ parseWarning `mapM` splitOutput
     return $ groupByFilePath warns
 
 -- | Checks lambdananas is in PATH
 lambdananasExists :: IO Bool
-lambdananasExists = isRight <$> runLambdananas ["-h"]
+lambdananasExists = do
+    res <- runExceptT $ runLambdananas ["-h"]
+    return $ isRight res
 
 -- | Runs Lambdananas, passing it the provided arguments
 --
 -- On success, returns the raw stdout
-runLambdananas :: [String] -> IO (Either LambdananasError String)
+runLambdananas :: [String] -> ExceptT LambdananasError IO String
 runLambdananas args =
-    catch
+    catchError
         (go "lambdananas-exe") -- The binary name when installed with stack
-        (\(_ :: IOException) -> go "lambdananas") -- Alternative name
+        (\(_ :: LambdananasError) -> go "lambdananas") -- Alternative name
   where
-    go binName = runExceptT $ do
+    go binName = do
         let process = proc binName args
         (exitCode, stdout, stderr) <-
             ExceptT $
                 catch
                     (Right <$> readCreateProcessWithExitCode process "")
                     (\(_ :: IOException) -> return $ Left CommandNotFound)
-        liftEither $ case exitCode of
-            ExitSuccess -> Right stdout
+        case exitCode of
+            ExitSuccess -> return stdout
             -- TODO Check if portable
-            ExitFailure 127 -> Left CommandNotFound
+            ExitFailure 127 -> throwError CommandNotFound
             ExitFailure _
                 | "openFile: does not exist" `isInfixOf` stderr ->
-                    Left SourceFileNotFound
-                | otherwise -> Left $ UnknownError stderr
+                    throwError SourceFileNotFound
+                | otherwise -> throwError $ UnknownError stderr

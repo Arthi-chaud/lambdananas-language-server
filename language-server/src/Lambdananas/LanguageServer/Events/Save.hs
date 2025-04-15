@@ -10,6 +10,9 @@ import Language.LSP.Protocol.Message (
  )
 import Language.LSP.Server
 
+-- | Callback on file save
+--
+-- Reloads the diagnostics and publishes them
 onSave :: Handlers LSM
 onSave = notificationHandler SMethod_TextDocumentDidSave $ \notif -> do
     debugLog "Received 'save' notification"

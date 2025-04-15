@@ -19,6 +19,10 @@ import Language.LSP.Protocol.Types
 import Language.LSP.Server
 import System.FilePath (takeBaseName)
 
+-- | Handler for the 'Get Available Code Actions' request
+--
+-- If, at the cursor position, there is a 'Missing Header' Warning,
+-- Propose the 'Insert Header' Action
 onCodeActionRequest :: Handlers LSM
 onCodeActionRequest = requestHandler SMethod_TextDocumentCodeAction $ \req responder -> do
     debugLog "Code action request"
@@ -26,7 +30,6 @@ onCodeActionRequest = requestHandler SMethod_TextDocumentCodeAction $ \req respo
         Range (Position warnLine _) _ = r
         fileUri = doc ^. uri
     warns <- getCodingStyleWarningForFile fileUri
-    debugLog $ show warns
     case find (\w -> (W.line w - 1) == fromIntegral warnLine) warns of
         Nothing -> responder $ Right (InR Null)
         Just warn -> case W.ruleCode warn of
@@ -35,6 +38,9 @@ onCodeActionRequest = requestHandler SMethod_TextDocumentCodeAction $ \req respo
                 responder $ Right (InL [InR action])
             _ -> responder $ Right (InR Null)
 
+-- | Metadata for the 'Insert Header' Action.
+--
+-- Contains the actual action to execute
 insertHeaderAction :: Diagnostic -> Uri -> IO CodeAction
 insertHeaderAction diag fileUri = do
     year <- getCurrentTime <&> (\t -> let (year, _, _) = toGregorian $ utctDay t in year)
