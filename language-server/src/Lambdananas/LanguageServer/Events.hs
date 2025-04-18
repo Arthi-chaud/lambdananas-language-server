@@ -23,4 +23,14 @@ eventHandlers =
         , onFileEvent
         , onDelete
         , onRename
+        , onHover
         ]
+
+onHover :: Handlers LSM
+onHover = requestHandler SMethod_TextDocumentHover $ \req responder -> do
+    let TRequestMessage _ _ _ (HoverParams _doc pos _workDone) = req
+        Position _l _c' = pos
+        rsp = Hover (InL ms) (Just range)
+        ms = mkMarkdown $ pack "See you at Lambda Days 2025 👋\n\n\n\n![img](/Users/arthur/Downloads/hello-penguin.gif)"
+        range = Range pos pos
+    responder (Right $ InL rsp)
